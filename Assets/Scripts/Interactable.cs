@@ -1,13 +1,14 @@
 using UnityEngine;
+using System.Collections;
 
 public class Interactable : MonoBehaviour
 {
     public float pickupHeight = 0.5f;   // Высота, на которую поднимаем объект над столом.
     public LayerMask tableLayer;       // Слой, к которому относится ваш стол. Это важно для определения высоты
+    public GameObject berries;
 
     private Rigidbody rb;
     private Camera mainCamera;
-    private Animator animator;  // Ссылка на компонент Animator
 
     private bool isHoldingObject = false;
     private bool isMouseOver = false;
@@ -20,6 +21,8 @@ public class Interactable : MonoBehaviour
 
     private Outline outlineComponent;  // Ссылка на компонент Outline
     private OutlineSettings outlineSettings;
+    private Animation animation;
+    
     
 
     void Start()
@@ -56,11 +59,11 @@ public class Interactable : MonoBehaviour
         outlineSettings = FindAnyObjectByType<OutlineSettings>();
         initialPosition = transform.position;
 
-        // Получаем компонент Animator
-        animator = GetComponent<Animator>();
-        if (animator == null && gameObject.CompareTag("berries")) //Если у объекта тег Berries, то ищем аниматор, иначе - не нужно.
+        // Получаем компонент Animation
+        animation = GetComponent<Animation>();
+        if (animation == null || !gameObject.CompareTag("berries")) //Если у объекта тег Berries, то ищем аниматор, иначе - не нужно.
         {
-            Debug.LogWarning("Объект с тегом 'berries' не имеет компонента Animator!");
+            Debug.LogWarning("Нет компонента Animation или не установлен тег");
         }
     }
 
@@ -94,14 +97,7 @@ public class Interactable : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0) && isHoldingObject)
         {
-            // Если у объекта тег "berries", проигрываем анимацию
-            if (gameObject.CompareTag("berries") && animator != null)
-            {
-                animator.Play("BerriesAnimation");
-            }
-
-            DropObject();
-            isReturning = true;
+            StartCoroutine(HandleObjectRelease());
         }
 
         if (isHoldingObject)
@@ -123,6 +119,37 @@ public class Interactable : MonoBehaviour
                 rb.angularVelocity = Vector3.zero; // Останавливаем вращение
             }
         }
+    }
+    IEnumerator HandleObjectRelease()
+    {
+        // Если у объекта тег "berries", проигрываем анимацию и ждем ее завершения
+        if (gameObject.CompareTag("berries"))
+        {
+            animation.Play("BerriesAnimation");
+
+            Rigidbody berriesrb;
+            if (berries != null)
+            {
+                berriesrb = berries.GetComponent<Rigidbody>();
+                berriesrb.useGravity = true; // Включаем гравитацию, чтобы объект упал.
+                berriesrb.isKinematic = false;
+            }
+            else Debug.Log("Не назначен Berries или проблемы с RigidBody");
+
+            // Ждем пока анимация не закончит проигрываться.
+            yield return new WaitForSeconds(animation["BerriesAnimation"].length);
+
+            if (berries != null)
+            {
+                berriesrb = berries.GetComponent<Rigidbody>();
+                berriesrb.useGravity = false; // Включаем гравитацию, чтобы объект упал.
+                berriesrb.isKinematic = true;
+                berries.SetActive(false);
+            }
+        }
+
+        DropObject();
+        isReturning = true;
     }
 
     void PickupObject()
@@ -174,13 +201,6 @@ public class Interactable : MonoBehaviour
         Vector3 targetPosition = new Vector3(objectWorldPosition.x, objectWorldPosition.y + pickupHeight + initialYOffset, objectWorldPosition.z);
 
         transform.position = targetPosition;
-    }
-
-    private void ReturnToInitialPosition()
-    {
-        transform.position = initialPosition;
-        rb.linearVelocity = Vector3.zero;  // Останавливаем движение
-        rb.angularVelocity = Vector3.zero; // Останавливаем вращение
     }
 
     //Вспомогательная функция для включения/выключения компонента Outline
