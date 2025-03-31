@@ -2,49 +2,65 @@ using UnityEngine;
 
 public class Interactable : MonoBehaviour
 {
-    public float pickupHeight = 0.5f;   // ������, �� ������� ��������� ������ ��� ������.
-    public LayerMask tableLayer;       // ����, � �������� ��������� ��� ����. ��� ����� ��� ����������� ������.
+    public float pickupHeight = 0.5f;   // Высота, на которую поднимаем объект над столом.
+    public LayerMask tableLayer;       // Слой, к которому относится ваш стол. Это важно для определения высоты
 
     private Rigidbody rb;
-    private bool isHoldingObject = false;
-    private Vector3 objectWorldPosition;
     private Camera mainCamera;
-    private float initialYOffset;
+    private Animator animator;  // Ссылка на компонент Animator
+
+    private bool isHoldingObject = false;
     private bool isMouseOver = false;
-    private MonoBehaviour interactableScript;
+    private bool isReturning = false;
+    private float initialYOffset;
+    private float returnSpeed = 4f;
+
+    private Vector3 objectWorldPosition;
+    private Vector3 initialPosition;
+
+    private Outline outlineComponent;  // Ссылка на компонент Outline
+    private OutlineSettings outlineSettings;
+    
 
     void Start()
     {
+        // Получаем компонент Outline
+        outlineComponent = GetComponent<Outline>();
         rb = GetComponent<Rigidbody>();
         if (rb == null)
         {
-            Debug.LogError("������ ������ ����� ��������� Rigidbody!");
-            enabled = false; // ��������� ������, ���� ��� Rigidbody.
+            Debug.LogError("Объект должен иметь компонент Rigidbody!");
+            EnableOutline(false); // Отключаем скрипт, если нет Rigidbody.
             return;
         }
 
-        rb.useGravity = true; // ���������, ��� ���������� �������� ����������.
-        rb.isKinematic = false; // ���������, ��� ������ �� kinematic ����������
+        rb.useGravity = true; // Убедитесь, что гравитация включена изначально.
+        rb.isKinematic = false; // Убедитесь, что объект не kinematic изначально
 
-        mainCamera = Camera.main; // �������� ������ �� ������� ������.
+        mainCamera = Camera.main; // Получаем ссылку на главную камеру.
         if (mainCamera == null)
         {
-            Debug.LogError("������� ������ �� �������!");
-            enabled = false; // ��������� ������, ���� ��� ������.
+            Debug.LogError("Главная камера не найдена!");
+            EnableOutline(false); // Отключаем скрипт, если нет камеры.
             return;
         }
-        Component scriptComponent = GetComponent<Outline>();
-        if (scriptComponent != null)
+        
+        if (outlineComponent == null)
         {
-            interactableScript = (MonoBehaviour)scriptComponent;
-
-            //Отключаем скрипт interactable в начале
-            if (interactableScript != null && interactableScript.enabled)
-                interactableScript.enabled = false;
+            Debug.LogWarning("Компонент 'Outline' не найден на объекте.  Убедитесь, что он добавлен.");
         }
         else
         {
-            Debug.LogWarning("Скрипт \"Outline\" не найден на объекте.");
+            EnableOutline(false);
+        }
+        outlineSettings = FindAnyObjectByType<OutlineSettings>();
+        initialPosition = transform.position;
+
+        // Получаем компонент Animator
+        animator = GetComponent<Animator>();
+        if (animator == null && gameObject.CompareTag("berries")) //Если у объекта тег Berries, то ищем аниматор, иначе - не нужно.
+        {
+            Debug.LogWarning("Объект с тегом 'berries' не имеет компонента Animator!");
         }
     }
 
@@ -59,7 +75,7 @@ public class Interactable : MonoBehaviour
             if (!isMouseOver) // Если мышь только что навелась
             {
                 isMouseOver = true;
-                EnableInteractableScript(true);
+                EnableOutline(true);
             }
         }
         else
@@ -67,7 +83,7 @@ public class Interactable : MonoBehaviour
             if (isMouseOver) // Если мышь только что ушла с объекта
             {
                 isMouseOver = false;
-                EnableInteractableScript(false);
+                EnableOutline(false);
             }
         }
 
@@ -78,34 +94,56 @@ public class Interactable : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0) && isHoldingObject)
         {
+            // Если у объекта тег "berries", проигрываем анимацию
+            if (gameObject.CompareTag("berries") && animator != null)
+            {
+                animator.Play("BerriesAnimation");
+            }
+
             DropObject();
+            isReturning = true;
         }
 
         if (isHoldingObject)
         {
             MoveObject();
         }
+
+        if (isReturning)
+        {
+            // Плавный возврат к начальной позиции
+            transform.position = Vector3.Lerp(transform.position, initialPosition, Time.deltaTime * returnSpeed);
+
+            // Проверяем, достаточно ли близко мы к начальной позиции
+            if (Vector3.Distance(transform.position, initialPosition) < 0.01f)
+            {
+                transform.position = initialPosition; // Фиксируем позицию
+                isReturning = false;  // Прекращаем возврат
+                rb.linearVelocity = Vector3.zero; // Останавливаем движение
+                rb.angularVelocity = Vector3.zero; // Останавливаем вращение
+            }
+        }
     }
 
     void PickupObject()
     {
         isHoldingObject = true;
-        rb.useGravity = false; // ��������� ����������, ����� ������ �� �����.
-        rb.linearVelocity = Vector3.zero; // �������� ��������, ����� �������� �������������� ��������.
-        rb.angularVelocity = Vector3.zero; // �������� ������� ��������
-        rb.isKinematic = true; //������ ������ kinematic �� ����� �����������
+        rb.useGravity = false; // Отключаем гравитацию, чтобы объект не падал.
+        rb.linearVelocity = Vector3.zero; // Обнуляем скорость, чтобы избежать нежелательного движения.
+        rb.angularVelocity = Vector3.zero; // Обнуляем угловую скорость
+        rb.isKinematic = true; //Делаем объект kinematic на время перемещения
 
-        // �������� ������� ������� ������������ �����.
+        // Получаем позицию объекта относительно стола.
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, tableLayer)) // ���������� LayerMask
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, tableLayer)) // Используем LayerMask
         {
             initialYOffset = transform.position.y - hit.point.y;
             objectWorldPosition = hit.point;
         }
         else
         {
-            // ���� �� ������ � ����, ��������� �� ������������� ������ ������������ ������� �������.
+            // Если не попали в стол, поднимаем на фиксированную высоту относительно текущей позиции.
             objectWorldPosition = transform.position;
             initialYOffset = 0;
             objectWorldPosition.y -= pickupHeight;
@@ -115,8 +153,8 @@ public class Interactable : MonoBehaviour
     void DropObject()
     {
         isHoldingObject = false;
-        rb.useGravity = true; // �������� ����������, ����� ������ ����.
-        rb.isKinematic = false; //������ ��������� ���� kinematic
+        rb.useGravity = true; // Включаем гравитацию, чтобы объект упал.
+        rb.isKinematic = false; //Объект перестает быть kinematic
     }
 
     void MoveObject()
@@ -137,11 +175,25 @@ public class Interactable : MonoBehaviour
 
         transform.position = targetPosition;
     }
-    void EnableInteractableScript(bool enable)
+
+    private void ReturnToInitialPosition()
     {
-        if (interactableScript != null)
+        transform.position = initialPosition;
+        rb.linearVelocity = Vector3.zero;  // Останавливаем движение
+        rb.angularVelocity = Vector3.zero; // Останавливаем вращение
+    }
+
+    //Вспомогательная функция для включения/выключения компонента Outline
+    private void EnableOutline(bool enable)
+    {
+        if (outlineComponent != null)
         {
-            interactableScript.enabled = enable;
+            if (outlineSettings != null) // Проверяем, что OutlineColorSettings найден.
+            {
+                outlineComponent.OutlineColor = outlineSettings.outlineColor;
+            }
+
+            outlineComponent.enabled = enable;
         }
     }
 }
