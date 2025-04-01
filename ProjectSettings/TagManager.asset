@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 3
   tags:
   - berries
+  - roots
+  - herbs
+  - bowl
   layers:
   - Default
   - TransparentFX

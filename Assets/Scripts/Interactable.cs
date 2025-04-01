@@ -1,11 +1,13 @@
 using UnityEngine;
 using System.Collections;
+using UnityEditor.Search;
 
 public class Interactable : MonoBehaviour
 {
     public float pickupHeight = 0.5f;   // Высота, на которую поднимаем объект над столом.
     public LayerMask tableLayer;       // Слой, к которому относится ваш стол. Это важно для определения высоты
     public GameObject berries;
+    public int index = -1;
 
     private Rigidbody rb;
     private Camera mainCamera;
@@ -18,16 +20,19 @@ public class Interactable : MonoBehaviour
 
     private Vector3 objectWorldPosition;
     private Vector3 initialPosition;
+    private Vector3 initialScale;
+    private Vector3[] initialChildPositions;
 
     private Outline outlineComponent;  // Ссылка на компонент Outline
     private OutlineSettings outlineSettings;
-    private Animation animation;
-    
-    
+    private Animation anime;
+    private GameLogic gameLogic;
+
 
     void Start()
     {
         // Получаем компонент Outline
+        gameLogic = FindAnyObjectByType<GameLogic>();
         outlineComponent = GetComponent<Outline>();
         rb = GetComponent<Rigidbody>();
         if (rb == null)
@@ -47,10 +52,10 @@ public class Interactable : MonoBehaviour
             EnableOutline(false); // Отключаем скрипт, если нет камеры.
             return;
         }
-        
+
         if (outlineComponent == null)
         {
-            Debug.LogWarning("Компонент 'Outline' не найден на объекте.  Убедитесь, что он добавлен.");
+            Debug.LogWarning("Компонент 'Outline' не найден на объекте");
         }
         else
         {
@@ -58,12 +63,30 @@ public class Interactable : MonoBehaviour
         }
         outlineSettings = FindAnyObjectByType<OutlineSettings>();
         initialPosition = transform.position;
+        initialScale = transform.localScale;
 
         // Получаем компонент Animation
-        animation = GetComponent<Animation>();
-        if (animation == null || !gameObject.CompareTag("berries")) //Если у объекта тег Berries, то ищем аниматор, иначе - не нужно.
+        anime = GetComponent<Animation>();
+        if (anime == null && (gameObject.CompareTag("berries") || gameObject.CompareTag("roots")))
+        //Добавить проверку на остальные теги, чтобы у каждой миски была либо анимация, либо тег
         {
-            Debug.LogWarning("Нет компонента Animation или не установлен тег");
+            Debug.LogWarning("Нет компонента Animation на объекте с тегом " + tag);
+        }
+        if (this.index == 0 && (gameObject.CompareTag("berries") || gameObject.CompareTag("roots") || gameObject.CompareTag("herbs"))) Debug.Log("Не назначен индекс объекта");
+        if (berries != null)
+        {
+            Transform[] childTransforms = berries.GetComponentsInChildren<Transform>();
+            initialChildPositions = new Vector3[childTransforms.Length - 1]; // Исключаем сам berries
+
+            int i = 0;
+            foreach (Transform child in childTransforms)
+            {
+                if (child != berries.transform) // Пропускаем сам объект berries
+                {
+                    initialChildPositions[i] = child.position;
+                    i++;
+                }
+            }
         }
     }
 
@@ -105,7 +128,7 @@ public class Interactable : MonoBehaviour
             MoveObject();
         }
 
-        if (isReturning)
+        if (isReturning && gameObject.activeSelf)
         {
             // Плавный возврат к начальной позиции
             transform.position = Vector3.Lerp(transform.position, initialPosition, Time.deltaTime * returnSpeed);
@@ -117,39 +140,59 @@ public class Interactable : MonoBehaviour
                 isReturning = false;  // Прекращаем возврат
                 rb.linearVelocity = Vector3.zero; // Останавливаем движение
                 rb.angularVelocity = Vector3.zero; // Останавливаем вращение
+
+                RestoreChildPositions();
             }
         }
     }
     IEnumerator HandleObjectRelease()
     {
         // Если у объекта тег "berries", проигрываем анимацию и ждем ее завершения
-        if (gameObject.CompareTag("berries"))
+        if (gameObject.CompareTag("berries") && anime != null)
         {
-            animation.Play("BerriesAnimation");
+            anime.Play("BerriesAnimation");
 
-            Rigidbody berriesrb;
-            if (berries != null)
+            Rigidbody[] allRigidbodies = berries.GetComponentsInChildren<Rigidbody>();
+            // Включаем гравитацию для всех Rigidbody
+            foreach (Rigidbody rb in allRigidbodies)
             {
-                berriesrb = berries.GetComponent<Rigidbody>();
-                berriesrb.useGravity = true; // Включаем гравитацию, чтобы объект упал.
-                berriesrb.isKinematic = false;
+                rb.useGravity = true;
+                rb.isKinematic = false;
             }
-            else Debug.Log("Не назначен Berries или проблемы с RigidBody");
 
             // Ждем пока анимация не закончит проигрываться.
-            yield return new WaitForSeconds(animation["BerriesAnimation"].length);
+            yield return new WaitForSeconds(anime["BerriesAnimation"].length);
 
-            if (berries != null)
+            // Выключаем гравитацию и включаем кинематику для всех Rigidbody
+            foreach (Rigidbody rb in allRigidbodies)
             {
-                berriesrb = berries.GetComponent<Rigidbody>();
-                berriesrb.useGravity = false; // Включаем гравитацию, чтобы объект упал.
-                berriesrb.isKinematic = true;
-                berries.SetActive(false);
+                rb.useGravity = false;
+                rb.isKinematic = true;
             }
+            if (berries != null && this.index > 0)
+            {
+                berries.SetActive(false);
+                gameLogic.BerriesOn(this.index);
+            }
+
         }
 
+        if (gameObject.CompareTag("roots") && anime != null)
+        {
+            anime.Play("RootsAnimation");
+            yield return new WaitForSeconds(anime["RootsAnimation"].length);
+            gameLogic.RootsOn(this.index);
+
+        }
         DropObject();
-        isReturning = true;
+        if (gameObject.CompareTag("roots"))
+        {
+            gameObject.SetActive(false);
+            gameObject.transform.localScale = initialScale;
+            gameObject.transform.position = initialPosition;
+        }
+            
+
     }
 
     void PickupObject()
@@ -182,6 +225,8 @@ public class Interactable : MonoBehaviour
         isHoldingObject = false;
         rb.useGravity = true; // Включаем гравитацию, чтобы объект упал.
         rb.isKinematic = false; //Объект перестает быть kinematic
+
+        isReturning = true;
     }
 
     void MoveObject()
@@ -210,10 +255,34 @@ public class Interactable : MonoBehaviour
         {
             if (outlineSettings != null) // Проверяем, что OutlineColorSettings найден.
             {
-                outlineComponent.OutlineColor = outlineSettings.outlineColor;
+                outlineComponent.OutlineColor = outlineSettings.basicOutlineColor;
+                outlineComponent.OutlineWidth = outlineSettings.outlineWidth;
             }
 
             outlineComponent.enabled = enable;
+        }
+    }
+
+    // Восстановление начальных позиций потомков
+    private void RestoreChildPositions()
+    {
+        if (berries != null && initialChildPositions != null)
+        {
+            Transform[] childTransforms = berries.GetComponentsInChildren<Transform>();
+            int i = 0;
+            foreach (Transform child in childTransforms)
+            {
+                if (child != berries.transform)
+                {
+                    // Если позиция ребенка не была изменена вручную, восстанавливаем ее
+                    if (child.GetComponent<Rigidbody>() != null && child.GetComponent<Rigidbody>().isKinematic)
+                    {
+                        child.position = initialChildPositions[i];
+                        child.rotation = Quaternion.identity;
+                    }
+                    i++;
+                }
+            }
         }
     }
 }
