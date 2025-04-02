@@ -1,89 +1,43 @@
-using System.Collections.Generic;
-using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameLogic : MonoBehaviour
 {
-    [SerializeField] GameObject[] berries;
-    [SerializeField] GameObject[] roots;
-    [SerializeField] GameObject[] herbs;
+    public GameObject[] objectsToOutline;
 
-    public Collider[] bowlColliders; // Назначьте триггеры в инспекторе
+    private static GameObject currentObject;
+    private AnimationsControl animationsControl;
+    private int index = -1;
 
-    private void Awake()
+    private void Start()
     {
-        if (bowlColliders == null || bowlColliders.Length != 3)
-        {
-            Debug.LogError("Необходимо назначить 3 коллайдера мисок в массиве bowlColliders в инспекторе!");
-        }
+        animationsControl = FindAnyObjectByType<AnimationsControl>();
+        currentObject = null;
+    }
+    public void SetCurrentObject(GameObject obj)
+    {
+        currentObject = obj;
+        Debug.Log("CurrentObject is" + currentObject.name);
+        index = animationsControl.GetCorrectBowlIndex(currentObject);
+        OutlineObject(index, true);
     }
 
-    public bool IsNearCorrectBowl(GameObject obj)
+    public void NullCurrentObject()
     {
-        int correctBowlIndex = GetCorrectBowlIndex(obj);
-
-        if (correctBowlIndex == -1)
-        {
-            return false; // Неизвестный тег объекта
-        }
-
-        // Проверяем, пересекает ли объект коллайдер правильной миски
-        return IsOverlappingCollider(obj, correctBowlIndex);
+        currentObject = null;
+        Debug.Log("CurrentObject is null");
+        OutlineObject(index, false);
     }
-
-    private bool IsOverlappingCollider(GameObject obj, int bowlIndex)
+    public void OutlineObject(int index, bool enable)
     {
-        if (bowlColliders == null || bowlIndex < 0 || bowlIndex >= bowlColliders.Length || bowlColliders[bowlIndex] == null)
+        Interactable interactable = objectsToOutline[index].GetComponent<Interactable>();
+        if (interactable != null)
         {
-            Debug.LogError("Неверный индекс коллайдера или коллайдер не назначен!");
-            return false;
-        }
-
-        // Используем перекрытие Bounds для более надежной проверки
-        return bowlColliders[bowlIndex].bounds.Intersects(obj.GetComponent<Collider>().bounds);
-    }
-    private int GetCorrectBowlIndex(GameObject obj)
-    {
-        if (obj.CompareTag("roots"))
-        {
-            return 0; // Для roots правильная миска с индексом 0
-        }
-        else if (obj.CompareTag("bowl"))
-        {
-            return 1; // Для berries правильная миска с индексом 1
-        }
-        else if (obj.CompareTag("herbs") || obj.CompareTag("berries"))
-        {
-            return 2; // Для herbs правильная миска с индексом 2
+            interactable.OutlineOn(enable);
         }
         else
         {
-            Debug.LogWarning("Неизвестный тег объекта: " + obj.tag);
-            return -1; // Если тег не распознан, возвращаем -1
+            Debug.Log("Interactable is null in ControlOneOutline");
         }
-    }
-    public void BerriesOn(int index)
-    {
-        for (int i = 0; i < berries.Length; i++)
-        {
-            berries[i].SetActive(false);
-        }
-        berries[index - 1].SetActive(true);
-    }
-    public void RootsOn(int index)
-    {
-        for (int i = 0; i < roots.Length; i++)
-        {
-            roots[i].SetActive(false);
-        }
-        roots[index - 1].SetActive(true);
-    }
-    public void HerbsOn(int index)
-    {
-        for (int i = 0; i < herbs.Length; i++)
-        {
-            herbs[i].SetActive(false);
-        }
-        herbs[index - 1].SetActive(true);
     }
 }

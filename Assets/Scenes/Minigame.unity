@@ -265,6 +265,9 @@ GameObject:
   m_Component:
   - component: {fileID: 25506765}
   - component: {fileID: 25506766}
+  - component: {fileID: 25506767}
+  - component: {fileID: 25506769}
+  - component: {fileID: 25506768}
   m_Layer: 0
   m_Name: Empty Bowl
   m_TagString: bowl
@@ -311,6 +314,66 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.65911555, y: 0.3395427, z: 0.6795151}
   m_Center: {x: 0.0014177561, y: -0.080442935, z: 0.0042330027}
+--- !u!114 &25506767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 25506764}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineWidth: 2
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
+--- !u!54 &25506768
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 25506764}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0
+--- !u!114 &25506769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 25506764}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db13f8eff7e85d047ba860bfca75ae7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  index: 2
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!1 &34033387
 GameObject:
   m_ObjectHideFlags: 0
@@ -808,6 +871,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 2
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!54 &118490061
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -924,6 +989,42 @@ Transform:
   m_Children: []
   m_Father: {fileID: 873692355}
   m_LocalEulerAnglesHint: {x: 0, y: -3.434, z: 0}
+--- !u!1 &154662903
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 154662904}
+  m_Layer: 0
+  m_Name: CAMERAS
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &154662904
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 154662903}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.74677616, y: 0.81283057, z: -1.788042}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 409270216}
+  - {fileID: 413317488}
+  - {fileID: 276086611}
+  - {fileID: 1303167641}
+  - {fileID: 2029687536}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &164963097
 GameObject:
   m_ObjectHideFlags: 0
@@ -1543,11 +1644,11 @@ Transform:
   m_GameObject: {fileID: 276086607}
   serializedVersion: 2
   m_LocalRotation: {x: 0.05867904, y: -0, z: -0, w: 0.9982769}
-  m_LocalPosition: {x: 0, y: 2.85, z: -3.86}
+  m_LocalPosition: {x: -0.74677616, y: 2.0371695, z: -2.071958}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 154662904}
   m_LocalEulerAnglesHint: {x: 6.728, y: 0, z: 0}
 --- !u!1 &276154001
 GameObject:
@@ -1684,6 +1785,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 2
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
   berriesObject: {fileID: 1034528436}
 --- !u!1 &284324041
 GameObject:
@@ -3020,11 +3123,11 @@ Transform:
   m_GameObject: {fileID: 409270213}
   serializedVersion: 2
   m_LocalRotation: {x: 0.6043696, y: -0, z: -0, w: 0.7967041}
-  m_LocalPosition: {x: 0, y: 3.3, z: -2.58}
+  m_LocalPosition: {x: -0.74677616, y: 2.4871693, z: -0.791958}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 154662904}
   m_LocalEulerAnglesHint: {x: 74.367, y: 0, z: 0}
 --- !u!114 &409270217
 MonoBehaviour:
@@ -3337,11 +3440,11 @@ Transform:
   m_GameObject: {fileID: 413317484}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5081904, y: -0, z: -0, w: 0.8612448}
-  m_LocalPosition: {x: 0, y: 3.78, z: -3.32}
+  m_LocalPosition: {x: -0.74677616, y: 2.9671693, z: -1.531958}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 154662904}
   m_LocalEulerAnglesHint: {x: 61.087, y: 0, z: 0}
 --- !u!1 &430874534
 GameObject:
@@ -3758,6 +3861,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 2
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!111 &470073892
 Animation:
   m_ObjectHideFlags: 0
@@ -3788,6 +3893,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 2
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!1 &504836992
 GameObject:
   m_ObjectHideFlags: 0
@@ -4208,7 +4315,7 @@ GameObject:
   - component: {fileID: 566369399}
   - component: {fileID: 566369398}
   - component: {fileID: 566369397}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: BerriesDust (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4224,8 +4331,8 @@ Transform:
   m_GameObject: {fileID: 566369395}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.028, y: -0.149, z: -0.019}
-  m_LocalScale: {x: 0.2062709, y: 0.057771936, z: 0.2041562}
+  m_LocalPosition: {x: -0.028, y: -0.149, z: -0.0159}
+  m_LocalScale: {x: 0.2062709, y: 0.057771936, z: 0.27512574}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1592105907}
@@ -5543,6 +5650,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 2
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!54 &770018433
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -6251,6 +6360,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 1
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!54 &807496267
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -6918,6 +7029,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 3
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!111 &861818337
 Animation:
   m_ObjectHideFlags: 0
@@ -6948,6 +7061,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 3
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!1 &873692354
 GameObject:
   m_ObjectHideFlags: 0
@@ -7023,6 +7138,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 1
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!114 &873692358
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7378,7 +7495,7 @@ GameObject:
   - component: {fileID: 935215982}
   - component: {fileID: 935215981}
   - component: {fileID: 935215980}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Herbs (1)
   m_TagString: herbs
   m_Icon: {fileID: 0}
@@ -7431,6 +7548,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 1
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!54 &935215982
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -9222,7 +9341,7 @@ GameObject:
   - component: {fileID: 1160507670}
   - component: {fileID: 1160507669}
   m_Layer: 0
-  m_Name: GameController
+  m_Name: AnimationsController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9251,6 +9370,11 @@ MonoBehaviour:
   - {fileID: 1857750834}
   - {fileID: 935215978}
   - {fileID: 2006038819}
+  berriesDust:
+  - {fileID: 1651098394}
+  - {fileID: 1187441231}
+  - {fileID: 566369395}
+  mortarAnime: {fileID: 1820716118}
   bowlColliders:
   - {fileID: 216186774}
   - {fileID: 2094460587}
@@ -9441,6 +9565,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 1
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!111 &1161488269
 Animation:
   m_ObjectHideFlags: 0
@@ -9471,6 +9597,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 1
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!1 &1161896890
 GameObject:
   m_ObjectHideFlags: 0
@@ -9778,6 +9906,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 1
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!111 &1187152098
 Animation:
   m_ObjectHideFlags: 0
@@ -9808,6 +9938,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 1
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!1 &1187441231
 GameObject:
   m_ObjectHideFlags: 0
@@ -9820,7 +9952,7 @@ GameObject:
   - component: {fileID: 1187441235}
   - component: {fileID: 1187441234}
   - component: {fileID: 1187441233}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: BerriesDust (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9836,8 +9968,8 @@ Transform:
   m_GameObject: {fileID: 1187441231}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.028, y: -0.149, z: -0.019}
-  m_LocalScale: {x: 0.2062709, y: 0.057771936, z: 0.2041562}
+  m_LocalPosition: {x: -0.028, y: -0.149, z: -0.0159}
+  m_LocalScale: {x: 0.2062709, y: 0.057771936, z: 0.27512574}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1592105907}
@@ -9916,6 +10048,54 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1187441231}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1255893138
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1255893140}
+  - component: {fileID: 1255893139}
+  m_Layer: 0
+  m_Name: GameLogicController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1255893139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255893138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5053a7c0e1f468446930465e2faed9a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectsToOutline:
+  - {fileID: 873692354}
+  - {fileID: 25506764}
+  - {fileID: 1592105906}
+--- !u!4 &1255893140
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255893138}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.6706713, y: 0.34535515, z: -2.2578082}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1260418793
 GameObject:
   m_ObjectHideFlags: 0
@@ -10699,11 +10879,11 @@ Transform:
   m_GameObject: {fileID: 1303167637}
   serializedVersion: 2
   m_LocalRotation: {x: 0.47647965, y: -0, z: -0, w: 0.8791855}
-  m_LocalPosition: {x: -0.045, y: 2.92, z: 0.13}
+  m_LocalPosition: {x: -0.7917762, y: 2.1071696, z: 1.918042}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 154662904}
   m_LocalEulerAnglesHint: {x: 56.911, y: 0, z: 0}
 --- !u!1 &1324247228
 GameObject:
@@ -11420,6 +11600,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 2
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!111 &1397918528
 Animation:
   m_ObjectHideFlags: 0
@@ -11450,6 +11632,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 2
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!1 &1405934858
 GameObject:
   m_ObjectHideFlags: 0
@@ -12075,6 +12259,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 1
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
   berriesObject: {fileID: 2028349635}
 --- !u!1 &1452578728
 GameObject:
@@ -13035,7 +13221,7 @@ GameObject:
   - component: {fileID: 1558146647}
   - component: {fileID: 1558146646}
   m_Layer: 0
-  m_Name: ObjectsOutlineContoller
+  m_Name: OutlineSettingsContoller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13289,6 +13475,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 2
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!114 &1592105910
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13329,10 +13517,10 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 118
   m_CollisionDetection: 0
 --- !u!111 &1592105912
 Animation:
@@ -13499,7 +13687,7 @@ GameObject:
   - component: {fileID: 1651098398}
   - component: {fileID: 1651098397}
   - component: {fileID: 1651098396}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: BerriesDust
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13515,8 +13703,8 @@ Transform:
   m_GameObject: {fileID: 1651098394}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.028, y: -0.149, z: -0.019}
-  m_LocalScale: {x: 0.2062709, y: 0.057771936, z: 0.2041562}
+  m_LocalPosition: {x: -0.028, y: -0.149, z: -0.0159}
+  m_LocalScale: {x: 0.2062709, y: 0.057771936, z: 0.27512574}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1592105907}
@@ -13838,6 +14026,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 3
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
   berriesObject: {fileID: 955293193}
 --- !u!1 &1669673567
 GameObject:
@@ -15590,6 +15780,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: -1
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!114 &1847828584
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15693,7 +15885,7 @@ GameObject:
   - component: {fileID: 1857750838}
   - component: {fileID: 1857750837}
   - component: {fileID: 1857750836}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Herbs
   m_TagString: herbs
   m_Icon: {fileID: 0}
@@ -15746,6 +15938,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 1
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!54 &1857750838
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -16324,7 +16518,7 @@ GameObject:
   - component: {fileID: 2006038823}
   - component: {fileID: 2006038822}
   - component: {fileID: 2006038821}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Herbs (2)
   m_TagString: herbs
   m_Icon: {fileID: 0}
@@ -16377,6 +16571,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   index: 1
+  highlightOnHover: 1
+  manualHighlightEnabled: 0
 --- !u!54 &2006038823
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -16647,11 +16843,11 @@ Transform:
   m_GameObject: {fileID: 2029687532}
   serializedVersion: 2
   m_LocalRotation: {x: 0.6523843, y: -0, z: -0, w: 0.7578884}
-  m_LocalPosition: {x: -0.045, y: 2.88, z: 0.85}
+  m_LocalPosition: {x: -0.7917762, y: 2.0671697, z: 2.638042}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 154662904}
   m_LocalEulerAnglesHint: {x: 81.443, y: 0, z: 0}
 --- !u!1 &2038914071
 GameObject:
@@ -17311,11 +17507,7 @@ MeshFilter:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 409270216}
-  - {fileID: 413317488}
-  - {fileID: 276086611}
-  - {fileID: 1303167641}
-  - {fileID: 2029687536}
+  - {fileID: 154662904}
   - {fileID: 1675216594}
   - {fileID: 1370055769}
   - {fileID: 1695637156}
@@ -17339,3 +17531,4 @@ SceneRoots:
   - {fileID: 891105681}
   - {fileID: 1558146647}
   - {fileID: 1160507670}
+  - {fileID: 1255893140}

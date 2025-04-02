@@ -6,7 +6,7 @@ public class Berries : Interactable
     public GameObject berriesObject; // Refactor berries -> berriesObject
     private Vector3[] initialChildPositions;
     private Animation anime;
-    private GameLogic gameLogic;
+    private AnimationsControl animationsControl;
     private bool needToReturn = false;
 
     protected override void Start()
@@ -19,7 +19,7 @@ public class Berries : Interactable
             Debug.LogWarning("Нет компонента Animation на объекте Berries");
         }
 
-        gameLogic = FindAnyObjectByType<GameLogic>();
+        animationsControl = FindAnyObjectByType<AnimationsControl>();
 
         if (berriesObject != null)
         {
@@ -42,7 +42,7 @@ public class Berries : Interactable
     protected override IEnumerator HandleObjectRelease()
     {
         // Если у объекта тег "berries", проигрываем анимацию и ждем ее завершения
-        if (anime != null && gameLogic.IsNearCorrectBowl(this.gameObject))
+        if (anime != null && animationsControl.IsNearCorrectBowl(this.gameObject))
         {
             needToReturn = true;
             anime.Play("BerriesAnimation");
@@ -67,15 +67,18 @@ public class Berries : Interactable
             if (berriesObject != null && this.index > 0)
             {
                 berriesObject.SetActive(false);
-                gameLogic.BerriesOn(this.index);
+                animationsControl.BerriesOn(this.index);
             }
+            DropObject();
+            float time = animationsControl.PlayMortarAnimation();
+            yield return new WaitForSeconds(time);
+            animationsControl.BerriesDustOn(this.index);
         }
         else
         {
             isReturning = true;
+            DropObject();
         }
-        DropObject();
-
     }
 
     protected override void ReturnToInitialPosition()

@@ -4,10 +4,10 @@ using System.Collections;
 public class Roots : Interactable
 {
     private Animation anime;
-    private GameLogic gameLogic;
+    private AnimationsControl animationsControl;
     private bool needToDelete = false;
 
-    protected override void Start()
+    protected void Awake()
     {
         base.Start();
 
@@ -17,18 +17,18 @@ public class Roots : Interactable
             Debug.LogWarning("Нет компонента Animation на объекте Roots");
         }
 
-        gameLogic = FindAnyObjectByType<GameLogic>();
+        animationsControl = FindAnyObjectByType<AnimationsControl>();
 
         if (tag != "roots") Debug.LogWarning("Тэг объекта не Roots");
 
     }
     protected override IEnumerator HandleObjectRelease()
     {
-        if (anime != null && gameLogic.IsNearCorrectBowl(this.gameObject))
+        if (anime != null && animationsControl.IsNearCorrectBowl(this.gameObject))
         {
             anime.Play("RootsAnimation");
             yield return new WaitForSeconds(anime["RootsAnimation"].length);
-            gameLogic.RootsOn(this.index);
+            animationsControl.RootsOn(this.index);
             needToDelete = true;
         }
         else

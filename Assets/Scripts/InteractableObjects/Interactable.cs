@@ -1,11 +1,15 @@
 using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
 
 public class Interactable : MonoBehaviour
 {
     protected float pickupHeight = 0.5f;
     protected LayerMask tableLayer;
     public int index = -1;
+
+    public bool highlightOnHover = false; // Переключатель для включения/выключения подсветки при наведении
+    public bool manualHighlightEnabled = false; // Флаг для ручного включения подсветки
 
     protected Rigidbody rb;
     protected Camera mainCamera;
@@ -22,11 +26,13 @@ public class Interactable : MonoBehaviour
 
     protected Outline outlineComponent;
     protected OutlineSettings outlineSettings;
+    protected GameLogic gameLogic2;
 
     protected virtual void Start()
     {
         tableLayer = LayerMask.GetMask("Table");
         rb = GetComponent<Rigidbody>();
+        gameLogic2 = FindAnyObjectByType<GameLogic>();
         if (rb == null)
         {
             Debug.LogError("Объект должен иметь компонент Rigidbody!");
@@ -52,7 +58,7 @@ public class Interactable : MonoBehaviour
         }
         else
         {
-            EnableOutline(false);
+            UpdateOutlineState(); // Инициализируем состояние Outline в Start
         }
 
         outlineSettings = FindAnyObjectByType<OutlineSettings>();
@@ -64,11 +70,13 @@ public class Interactable : MonoBehaviour
 
     protected virtual void Update()
     {
+        // Всегда проверяем на наведение мыши, чтобы isMouseOver был актуальным
         HandleMouseInteraction();
 
         if (Input.GetMouseButtonDown(0) && isMouseOver)
         {
             PickupObject();
+            gameLogic2.SetCurrentObject(this.GameObject());
         }
 
         if (Input.GetMouseButtonUp(0) && isHoldingObject)
@@ -125,6 +133,7 @@ public class Interactable : MonoBehaviour
         rb.useGravity = true;
         rb.isKinematic = false;
         isReturning = true;
+        gameLogic2.NullCurrentObject();
     }
 
     protected virtual void MoveObject()
@@ -149,24 +158,51 @@ public class Interactable : MonoBehaviour
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit) && hit.collider.gameObject == this.gameObject)
+        bool hitThisObject = Physics.Raycast(ray, out hit) && hit.collider.gameObject == this.gameObject;
+
+        if (hitThisObject != isMouseOver)
         {
-            if (!isMouseOver)
-            {
-                isMouseOver = true;
-                EnableOutline(true);
-            }
-        }
-        else
-        {
-            if (isMouseOver)
-            {
-                isMouseOver = false;
-                EnableOutline(false);
-            }
+            isMouseOver = hitThisObject;
+            UpdateOutlineState();
         }
     }
 
+    public void OutlineOn(bool enable)
+    {
+        EnableOutline(enable);
+        SetHighlightOnHover(!enable);
+    }
+    private void EnableOutline(bool enable)
+    {
+        manualHighlightEnabled = enable;
+        UpdateOutlineState();
+    }
+    private void SetHighlightOnHover(bool enable)
+    {
+        highlightOnHover = enable;
+        UpdateOutlineState();
+    }
+    // Метод для обновления состояния Outline (включение/выключение и настройка)
+    private void UpdateOutlineState()
+    {
+        bool shouldBeEnabled = (isMouseOver && highlightOnHover) || manualHighlightEnabled; // Проверяем условие для включения Outline
+        if (outlineComponent != null)
+        {
+            if (outlineSettings != null)
+            {
+                if (highlightOnHover)
+                {
+                    outlineComponent.OutlineColor = outlineSettings.basicOutlineColor;
+                }
+                else
+                {
+                    outlineComponent.OutlineColor = outlineSettings.tipOutlineColor;
+                }
+                outlineComponent.OutlineWidth = outlineSettings.outlineWidth;
+            }
+            outlineComponent.enabled = shouldBeEnabled;
+        }
+    }
     protected virtual void ReturnToInitialPosition()
     {
         transform.position = Vector3.Lerp(transform.position, initialPosition, Time.deltaTime * returnSpeed);
@@ -177,20 +213,6 @@ public class Interactable : MonoBehaviour
             isReturning = false;
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
-        }
-    }
-
-    protected void EnableOutline(bool enable)
-    {
-        if (outlineComponent != null)
-        {
-            if (outlineSettings != null)
-            {
-                outlineComponent.OutlineColor = outlineSettings.basicOutlineColor;
-                outlineComponent.OutlineWidth = outlineSettings.outlineWidth;
-            }
-
-            outlineComponent.enabled = enable;
         }
     }
 }
