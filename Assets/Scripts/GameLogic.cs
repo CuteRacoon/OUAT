@@ -5,6 +5,7 @@ public class GameLogic : MonoBehaviour
     [SerializeField] GameObject[] berries;
     [SerializeField] GameObject[] roots;
     [SerializeField] GameObject[] bowls;
+    [SerializeField] Collider[] bowlsColliders;
 
     public void BerriesOn(int index)
     {
