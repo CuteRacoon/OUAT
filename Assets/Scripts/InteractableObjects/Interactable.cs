@@ -59,7 +59,7 @@ public class Interactable : MonoBehaviour
         initialPosition = transform.position;
         initialScale = transform.localScale;
 
-        if (this.index == 0) Debug.Log("Не назначен индекс объекта");
+        if (this.index == -1) Debug.Log("Не назначен индекс объекта");
     }
 
     protected virtual void Update()

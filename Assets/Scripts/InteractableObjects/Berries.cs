@@ -7,6 +7,7 @@ public class Berries : Interactable
     private Vector3[] initialChildPositions;
     private Animation anime;
     private GameLogic gameLogic;
+    private bool needToReturn = false;
 
     protected override void Start()
     {
@@ -41,8 +42,9 @@ public class Berries : Interactable
     protected override IEnumerator HandleObjectRelease()
     {
         // Если у объекта тег "berries", проигрываем анимацию и ждем ее завершения
-        if (anime != null)
+        if (anime != null && gameLogic.IsNearCorrectBowl(this.gameObject))
         {
+            needToReturn = true;
             anime.Play("BerriesAnimation");
 
             Rigidbody[] allRigidbodies = berriesObject.GetComponentsInChildren<Rigidbody>();
@@ -67,7 +69,10 @@ public class Berries : Interactable
                 berriesObject.SetActive(false);
                 gameLogic.BerriesOn(this.index);
             }
-
+        }
+        else
+        {
+            isReturning = true;
         }
         DropObject();
 
@@ -77,7 +82,11 @@ public class Berries : Interactable
     {
         base.ReturnToInitialPosition(); // Вызываем базовую реализацию
 
-        RestoreChildPositions();
+        if (needToReturn) 
+        {
+            RestoreChildPositions();
+            needToReturn = false;
+        }
     }
 
     // Восстановление начальных позиций потомков
