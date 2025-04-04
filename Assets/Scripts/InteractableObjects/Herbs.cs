@@ -7,10 +7,17 @@ public class Herbs : Interactable
     private AnimationsControl animationsControl;
     private bool needToReturn;
 
+    private MeshRenderer meshRenderer;
+    private Collider boxCollider;
+
+    private int objectIndicator = 2;
+
 
     protected override void Start()
     {
         base.Start();
+        meshRenderer = GetComponent<MeshRenderer>();
+        boxCollider = GetComponent<Collider>();
 
         anime = GetComponent<Animation>();
         if (anime == null)
@@ -18,30 +25,53 @@ public class Herbs : Interactable
             Debug.LogWarning("Нет компонента Animation на объекте Herbs");
         }
 
-        animationsControl = FindAnyObjectByType<AnimationsControl>();
+        this.animationsControl = FindAnyObjectByType<AnimationsControl>();
 
         if (tag != "herbs") Debug.LogWarning("Тэг объекта не Herbs");
 
+    }
+    protected override void PickupObject()
+    {
+        base.PickupObject();
+        if (animationsControl.isFull)
+        {
+            animationsControl.CleanDust();
+        }
     }
     protected override IEnumerator HandleObjectRelease()
     {
         if (anime != null && animationsControl.IsNearCorrectBowl(this.gameObject))
         {
-            anime.Play("HerbsAnimation");
-            yield return new WaitForSeconds(anime["HerbsAnimation"].length);
             needToReturn = true;
-            animationsControl.HerbsOn(this.index);
-            gameObject.SetActive(false);
-            float time = animationsControl.PlayMortarAnimation();
+            anime.Play("HerbsAnimation");
+
+            yield return new WaitForSeconds(anime["HerbsAnimation"].length);
+
+            this.animationsControl.ObjectsOn(this.index, this.objectIndicator);
+            
+            DropObject();
+            meshRenderer.enabled = false;
+            boxCollider.enabled = false;
+            
+            float time = this.animationsControl.PlayMortarAnimation();
             yield return new WaitForSeconds(time);
+            this.animationsControl.ObjectsDustOn(this.index, this.objectIndicator);
+            
         }
-        DropObject();
+        else
+        {
+            DropObject();
+        }
         if (needToReturn)
         {
-            gameObject.transform.localScale = initialScale;
-            gameObject.transform.position = initialPosition;
+            base.ReturnToInitialPosition();
             needToReturn = false;
+        }
+        if (anime != null && animationsControl.IsNearCorrectBowl(this.gameObject))
+        {
+            gameObject.SetActive(false);
+            meshRenderer.enabled = true;
+            boxCollider.enabled = true;
         }
     }
 }
-

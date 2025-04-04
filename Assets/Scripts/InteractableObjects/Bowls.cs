@@ -1,0 +1,46 @@
+using UnityEngine;
+using System.Collections;
+
+public class Bowls : Interactable
+{
+    private Animation anime;
+    private AnimationsControl animationsControl;
+
+    protected void Awake()
+    {
+        base.Start();
+
+        anime = GetComponent<Animation>();
+        if (anime == null)
+        {
+            Debug.LogWarning("Нет компонента Animation на объекте bowl");
+        }
+
+        animationsControl = FindAnyObjectByType<AnimationsControl>();
+
+        if (tag != "bowl") Debug.LogWarning("Тэг объекта не bowl");
+    }
+    protected override IEnumerator HandleObjectRelease()
+    {
+        string animationName = null;
+        switch (index)
+        {
+            case 1:
+                animationName = "WaterBowlAnimation";
+                break;
+            case 3:
+                animationName = "GrindBowlAnimation";
+                break;
+        }
+        if (anime != null && animationsControl.IsNearCorrectBowl(this.gameObject))
+        {
+            anime.Play(animationName);
+            yield return new WaitForSeconds(anime[animationName].length);
+        }
+        else
+        {
+            isReturning = true;
+        }
+        DropObject();
+    }
+}

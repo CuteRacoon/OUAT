@@ -9,6 +9,8 @@ public class Berries : Interactable
     private AnimationsControl animationsControl;
     private bool needToReturn = false;
 
+    private int objectIndicator = 1;
+
     protected override void Start()
     {
         base.Start();
@@ -39,6 +41,14 @@ public class Berries : Interactable
 
         if (tag != "berries") Debug.LogWarning("Тэг объекта не Berries");
     }
+    protected override void PickupObject()
+    {
+        base.PickupObject();
+        if (animationsControl.isFull)
+        {
+            animationsControl.CleanDust();
+        }
+    }
     protected override IEnumerator HandleObjectRelease()
     {
         // Если у объекта тег "berries", проигрываем анимацию и ждем ее завершения
@@ -67,16 +77,22 @@ public class Berries : Interactable
             if (berriesObject != null && this.index > 0)
             {
                 berriesObject.SetActive(false);
-                animationsControl.BerriesOn(this.index);
+                if (animationsControl.isFull)
+                {
+                    animationsControl.CleanDust();
+                }
+                animationsControl.ObjectsOn(this.index, objectIndicator);
+                
             }
             DropObject();
+            
             float time = animationsControl.PlayMortarAnimation();
             yield return new WaitForSeconds(time);
-            animationsControl.BerriesDustOn(this.index);
+            animationsControl.ObjectsDustOn(this.index, objectIndicator);
         }
         else
         {
-            isReturning = true;
+            //isReturning = true;
             DropObject();
         }
     }

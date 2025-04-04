@@ -22,6 +22,7 @@ public class Interactable : MonoBehaviour
 
     protected Vector3 initialPosition;
     protected Vector3 initialScale;
+    protected Vector3 initialRotation;
     protected Vector3 objectWorldPosition;
 
     protected Outline outlineComponent;
@@ -64,6 +65,7 @@ public class Interactable : MonoBehaviour
         outlineSettings = FindAnyObjectByType<OutlineSettings>();
         initialPosition = transform.position;
         initialScale = transform.localScale;
+        initialRotation = transform.rotation.eulerAngles;
 
         if (this.index == -1) Debug.Log("Не назначен индекс объекта");
     }
@@ -153,7 +155,7 @@ public class Interactable : MonoBehaviour
         transform.position = targetPosition;
     }
 
-    private void HandleMouseInteraction()
+    protected virtual void HandleMouseInteraction()
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
@@ -210,6 +212,8 @@ public class Interactable : MonoBehaviour
         if (Vector3.Distance(transform.position, initialPosition) < 0.01f)
         {
             transform.position = initialPosition;
+            transform.localScale = initialScale;
+            transform.rotation = Quaternion.Euler(initialRotation);
             isReturning = false;
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;

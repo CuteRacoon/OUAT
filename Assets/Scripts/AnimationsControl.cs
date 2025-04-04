@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class AnimationsControl : MonoBehaviour
 {
-    [SerializeField] GameObject[] berries;
-    [SerializeField] GameObject[] roots;
-    [SerializeField] GameObject[] herbs;
-    [SerializeField] GameObject[] berriesDust;
+    [SerializeField] GameObject berriesParent;
+    [SerializeField] GameObject rootsParent;
+    [SerializeField] GameObject herbsParent;
+    [SerializeField] GameObject berriesDustParent;
+    [SerializeField] GameObject herbsDustParent;
+
+    public bool isFull = false;
 
     public Animation mortarAnime;
-
 
     public Collider[] bowlColliders;
 
@@ -26,7 +28,6 @@ public class AnimationsControl : MonoBehaviour
         else
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
 
         if (bowlColliders == null || bowlColliders.Length != 3)
@@ -34,7 +35,21 @@ public class AnimationsControl : MonoBehaviour
             Debug.LogError("Необходимо назначить 3 коллайдера мисок в массиве bowlColliders в инспекторе!");
         }
     }
+    private GameObject[] GetChildren(GameObject parent)
+    {
+        if (parent == null)
+        {
+            Debug.LogError("Parent GameObject is null!");
+            return new GameObject[0]; // Возвращаем пустой массив
+        }
 
+        List<GameObject> children = new List<GameObject>();
+        foreach (Transform child in parent.transform)
+        {
+            children.Add(child.gameObject);
+        }
+        return children.ToArray();
+    }
     public bool IsNearCorrectBowl(GameObject obj)
     {
         int correctBowlIndex = GetCorrectBowlIndex(obj);
@@ -89,40 +104,69 @@ public class AnimationsControl : MonoBehaviour
         else Debug.Log("Animation нет на ступке");
         return 0;
     }
-    public void BerriesDustOn(int index)
+    public void ObjectsDustOn(int index, int objectIndicator)
     {
-        BerriesOn(-1);
-        for (int i = 0; i < berriesDust.Length; i++)
+        ObjectsOn(-1, 1);
+        ObjectsOn(-1, 2);
+        // Получаем массив из parent-объекта
+        GameObject[] objects = null;
+        switch (objectIndicator)
         {
-            berriesDust[i].SetActive(false);
+            /*case 0:
+                objects = GetChildren(rootsParent);
+                break;*/
+            case 1:
+                objects = GetChildren(berriesDustParent);
+                break;
+            case 2:
+                objects = GetChildren(herbsDustParent);
+                break;
         }
-        berriesDust[index - 1].SetActive(true);
+        if (objects != null)
+        {
+            for (int i = 0; i < objects.Length; i++)
+            {
+                objects[i].SetActive(false);
+            }
+            if (index > 0)
+            {
+                objects[index - 1].SetActive(true);
+                isFull = true;
+            }
+        }
     }
-    public void BerriesOn(int index)
+    public void CleanDust()
     {
-        for (int i = 0; i < berries.Length; i++)
-        {
-            berries[i].SetActive(false);
-        }
-        if (index > 0)
-        {
-            berries[index - 1].SetActive(true);
-        }
+        ObjectsDustOn(-1, 1);
+        ObjectsDustOn(-1, 2);
+        isFull = false;
     }
-    public void RootsOn(int index)
+
+    public void ObjectsOn(int index, int objectIndicator)
     {
-        for (int i = 0; i < roots.Length; i++)
+        GameObject[] objects = null;
+        switch (objectIndicator)
         {
-            roots[i].SetActive(false);
+            case 0:
+                objects = GetChildren(rootsParent);
+                break;
+            case 1:
+                objects = GetChildren(berriesParent);
+                break;
+            case 2:
+                objects = GetChildren(herbsParent);
+                break;
         }
-        roots[index - 1].SetActive(true);
-    }
-    public void HerbsOn(int index)
-    {
-        for (int i = 0; i < herbs.Length; i++)
+        if (objects != null)
         {
-            herbs[i].SetActive(false);
+            for (int i = 0; i < objects.Length; i++)
+            {
+                objects[i].SetActive(false);
+            }
+            if (index > 0)
+            {
+                objects[index - 1].SetActive(true);
+            }
         }
-        herbs[index - 1].SetActive(true);
     }
 }

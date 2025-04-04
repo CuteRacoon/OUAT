@@ -7,6 +7,8 @@ public class Roots : Interactable
     private AnimationsControl animationsControl;
     private bool needToDelete = false;
 
+    private int objectIndicator = 0;
+
     protected void Awake()
     {
         base.Start();
@@ -28,7 +30,7 @@ public class Roots : Interactable
         {
             anime.Play("RootsAnimation");
             yield return new WaitForSeconds(anime["RootsAnimation"].length);
-            animationsControl.RootsOn(this.index);
+            animationsControl.ObjectsOn(this.index, objectIndicator);
             needToDelete = true;
         }
         else
@@ -39,8 +41,7 @@ public class Roots : Interactable
         if (needToDelete)
         {
             gameObject.SetActive(false);
-            gameObject.transform.localScale = initialScale;
-            gameObject.transform.position = initialPosition;
+            base.ReturnToInitialPosition();
             needToDelete = false;
         }
     }
