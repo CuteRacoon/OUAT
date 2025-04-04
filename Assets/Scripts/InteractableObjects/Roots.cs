@@ -32,6 +32,12 @@ public class Roots : Interactable
             yield return new WaitForSeconds(anime["RootsAnimation"].length);
             animationsControl.ObjectsOn(this.index, objectIndicator);
             needToDelete = true;
+            gameLogic.AddToObjectsList(index, objectIndicator);
+            if (index == 1)
+            {
+                gameLogic.Roots[2].GetComponent<Roots>().enabled = false;
+            }
+            else gameLogic.Roots[1].GetComponent<Roots>().enabled = false;
         }
         else
         {

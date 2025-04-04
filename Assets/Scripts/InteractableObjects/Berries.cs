@@ -85,14 +85,18 @@ public class Berries : Interactable
                 
             }
             DropObject();
-            
+
             float time = animationsControl.PlayMortarAnimation();
             yield return new WaitForSeconds(time);
+
+            gameLogic.AccessBowlsInteraction(false);
+            gameLogic.Bowls[3].GetComponent<Bowls>().enabled = true;
+
             animationsControl.ObjectsDustOn(this.index, objectIndicator);
+            gameLogic.AddToObjectsList(index, objectIndicator);
         }
         else
         {
-            //isReturning = true;
             DropObject();
         }
     }

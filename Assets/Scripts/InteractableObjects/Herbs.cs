@@ -46,17 +46,22 @@ public class Herbs : Interactable
             anime.Play("HerbsAnimation");
 
             yield return new WaitForSeconds(anime["HerbsAnimation"].length);
-
-            this.animationsControl.ObjectsOn(this.index, this.objectIndicator);
             
+            this.animationsControl.ObjectsOn(this.index, this.objectIndicator);
+
             DropObject();
             meshRenderer.enabled = false;
             boxCollider.enabled = false;
-            
+
             float time = this.animationsControl.PlayMortarAnimation();
             yield return new WaitForSeconds(time);
+
+            gameLogic.AccessBowlsInteraction(false);
+            gameLogic.Bowls[3].GetComponent<Bowls>().enabled = true;
+
             this.animationsControl.ObjectsDustOn(this.index, this.objectIndicator);
-            
+            gameLogic.AddToObjectsList(index, objectIndicator);
+
         }
         else
         {

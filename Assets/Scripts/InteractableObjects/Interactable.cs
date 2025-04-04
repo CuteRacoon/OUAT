@@ -8,7 +8,7 @@ public class Interactable : MonoBehaviour
     protected LayerMask tableLayer;
     public int index = -1;
 
-    public bool highlightOnHover = false; // Переключатель для включения/выключения подсветки при наведении
+    public bool highlightOnHover = true; // Переключатель для включения/выключения подсветки при наведении
     public bool manualHighlightEnabled = false; // Флаг для ручного включения подсветки
 
     protected Rigidbody rb;
@@ -27,13 +27,13 @@ public class Interactable : MonoBehaviour
 
     protected Outline outlineComponent;
     protected OutlineSettings outlineSettings;
-    protected GameLogic gameLogic2;
+    protected GameLogic gameLogic;
 
     protected virtual void Start()
     {
         tableLayer = LayerMask.GetMask("Table");
         rb = GetComponent<Rigidbody>();
-        gameLogic2 = FindAnyObjectByType<GameLogic>();
+        gameLogic = FindAnyObjectByType<GameLogic>();
         if (rb == null)
         {
             Debug.LogError("Объект должен иметь компонент Rigidbody!");
@@ -69,7 +69,10 @@ public class Interactable : MonoBehaviour
 
         if (this.index == -1) Debug.Log("Не назначен индекс объекта");
     }
-
+    public int GetСomponentIndex()
+    {
+        return index;
+    }
     protected virtual void Update()
     {
         // Всегда проверяем на наведение мыши, чтобы isMouseOver был актуальным
@@ -78,7 +81,7 @@ public class Interactable : MonoBehaviour
         if (Input.GetMouseButtonDown(0) && isMouseOver)
         {
             PickupObject();
-            gameLogic2.SetCurrentObject(this.GameObject());
+            gameLogic.SetCurrentObject(this.GameObject());
         }
 
         if (Input.GetMouseButtonUp(0) && isHoldingObject)
@@ -135,7 +138,7 @@ public class Interactable : MonoBehaviour
         rb.useGravity = true;
         rb.isKinematic = false;
         isReturning = true;
-        gameLogic2.NullCurrentObject();
+        gameLogic.NullCurrentObject();
     }
 
     protected virtual void MoveObject()

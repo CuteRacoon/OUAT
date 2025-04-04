@@ -9,7 +9,7 @@ public class Bowls : Interactable
     protected void Awake()
     {
         base.Start();
-
+        base.OutlineOn(false);
         anime = GetComponent<Animation>();
         if (anime == null)
         {
@@ -35,7 +35,9 @@ public class Bowls : Interactable
         if (anime != null && animationsControl.IsNearCorrectBowl(this.gameObject))
         {
             anime.Play(animationName);
-            yield return new WaitForSeconds(anime[animationName].length);
+            yield return new WaitForSeconds(anime[animationName].length-0.5f);
+            animationsControl.CleanDust();
+            gameLogic.AccessBowlsInteraction(true);
         }
         else
         {
