@@ -37,12 +37,21 @@ public class Bowls : Interactable
             anime.Play(animationName);
             yield return new WaitForSeconds(anime[animationName].length-0.5f);
             animationsControl.CleanDust();
-            gameLogic.AccessBowlsInteraction(true);
+
+
+            if (index == 3) gameLogic.AccessHerbsAndBerriesInteraction(true);
+            if (index == 1)
+            {
+                animationsControl.ObjectsOn(-1, 3);
+                gameLogic.EndGame();
+            }
+            
         }
         else
         {
             isReturning = true;
         }
         DropObject();
+        if (index == 3) gameLogic.AccessBowls(3, false);
     }
 }

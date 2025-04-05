@@ -9,6 +9,9 @@ public class Roots : Interactable
 
     private int objectIndicator = 0;
 
+    private MeshRenderer meshRenderer;
+    private Collider boxCollider;
+
     protected void Awake()
     {
         base.Start();
@@ -22,6 +25,8 @@ public class Roots : Interactable
         animationsControl = FindAnyObjectByType<AnimationsControl>();
 
         if (tag != "roots") Debug.LogWarning("Тэг объекта не Roots");
+        meshRenderer = GetComponent<MeshRenderer>();
+        boxCollider = GetComponent<Collider>();
 
     }
     protected override IEnumerator HandleObjectRelease()
@@ -33,11 +38,11 @@ public class Roots : Interactable
             animationsControl.ObjectsOn(this.index, objectIndicator);
             needToDelete = true;
             gameLogic.AddToObjectsList(index, objectIndicator);
-            if (index == 1)
-            {
-                gameLogic.Roots[2].GetComponent<Roots>().enabled = false;
-            }
-            else gameLogic.Roots[1].GetComponent<Roots>().enabled = false;
+            int indexToDisable = (index == 1) ? 2 : 1;
+
+            gameLogic.AccessRoots(false);
+            gameLogic.AccessHerbsAndBerriesInteraction(true);
+            //gameLogic.AccessBowls(3, true);
         }
         else
         {
@@ -46,9 +51,13 @@ public class Roots : Interactable
         DropObject();
         if (needToDelete)
         {
-            gameObject.SetActive(false);
+            meshRenderer.enabled = false;
+            boxCollider.enabled = false;
             base.ReturnToInitialPosition();
+            gameObject.SetActive(false);
             needToDelete = false;
+            meshRenderer.enabled = true;
+            boxCollider.enabled = true;
         }
     }
 }

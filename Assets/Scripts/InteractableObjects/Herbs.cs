@@ -53,11 +53,13 @@ public class Herbs : Interactable
             meshRenderer.enabled = false;
             boxCollider.enabled = false;
 
+            gameLogic.AccessHerbsAndBerriesInteraction(false);
+
             float time = this.animationsControl.PlayMortarAnimation();
             yield return new WaitForSeconds(time);
+            gameLogic.AccessBowls(3, true);
 
-            gameLogic.AccessBowlsInteraction(false);
-            gameLogic.Bowls[3].GetComponent<Bowls>().enabled = true;
+            gameLogic.AccessHerbsAndBerriesInteraction(false);
 
             this.animationsControl.ObjectsDustOn(this.index, this.objectIndicator);
             gameLogic.AddToObjectsList(index, objectIndicator);

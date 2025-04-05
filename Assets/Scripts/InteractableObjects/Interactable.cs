@@ -17,6 +17,7 @@ public class Interactable : MonoBehaviour
     protected bool isHoldingObject = false;
     protected bool isMouseOver = false;
     protected bool isReturning = false;
+
     protected float initialYOffset;
     protected float returnSpeed = 4f;
 
@@ -220,6 +221,7 @@ public class Interactable : MonoBehaviour
             isReturning = false;
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
+            gameLogic.CheckNumberOfObjects();
         }
     }
 }

@@ -9,6 +9,8 @@ public class AnimationsControl : MonoBehaviour
     [SerializeField] GameObject herbsParent;
     [SerializeField] GameObject berriesDustParent;
     [SerializeField] GameObject herbsDustParent;
+    [SerializeField] GameObject rootsWaterParent;
+    [SerializeField] GameObject endPotionParent;
 
     public bool isFull = false;
 
@@ -34,6 +36,15 @@ public class AnimationsControl : MonoBehaviour
         {
             Debug.LogError("Необходимо назначить 3 коллайдера мисок в массиве bowlColliders в инспекторе!");
         }
+    }
+    public void ResetWaters()
+    {
+        ObjectsOn(-1, 3);
+        ObjectsOn(-1, 4);
+        GameObject[] objects = GetChildren(endPotionParent);
+        objects[0].SetActive(true);
+        objects = GetChildren(rootsWaterParent);
+        objects[0].SetActive(true);
     }
     private GameObject[] GetChildren(GameObject parent)
     {
@@ -155,6 +166,14 @@ public class AnimationsControl : MonoBehaviour
                 break;
             case 2:
                 objects = GetChildren(herbsParent);
+                break;
+            case 3:
+                objects = GetChildren(rootsWaterParent);
+                objects[0].SetActive(false);
+                break;
+            case 4:
+                objects = GetChildren(endPotionParent);
+                objects[0].SetActive(false);
                 break;
         }
         if (objects != null)

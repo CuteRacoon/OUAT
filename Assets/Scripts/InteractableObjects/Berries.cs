@@ -49,6 +49,10 @@ public class Berries : Interactable
             animationsControl.CleanDust();
         }
     }
+    public void ResetBerries()
+    {
+        berriesObject.SetActive(true);
+    }
     protected override IEnumerator HandleObjectRelease()
     {
         // Если у объекта тег "berries", проигрываем анимацию и ждем ее завершения
@@ -82,15 +86,16 @@ public class Berries : Interactable
                     animationsControl.CleanDust();
                 }
                 animationsControl.ObjectsOn(this.index, objectIndicator);
-                
+
             }
             DropObject();
 
+            gameLogic.AccessHerbsAndBerriesInteraction(false);
+
             float time = animationsControl.PlayMortarAnimation();
             yield return new WaitForSeconds(time);
+            gameLogic.AccessBowls(3, true);
 
-            gameLogic.AccessBowlsInteraction(false);
-            gameLogic.Bowls[3].GetComponent<Bowls>().enabled = true;
 
             animationsControl.ObjectsDustOn(this.index, objectIndicator);
             gameLogic.AddToObjectsList(index, objectIndicator);
@@ -105,7 +110,7 @@ public class Berries : Interactable
     {
         base.ReturnToInitialPosition(); // Вызываем базовую реализацию
 
-        if (needToReturn) 
+        if (needToReturn)
         {
             RestoreChildPositions();
             needToReturn = false;

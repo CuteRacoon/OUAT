@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -9,7 +11,10 @@ public class GameLogic : MonoBehaviour
 
     private static GameObject currentObject;
     private AnimationsControl animationsControl;
+    private int rootIndex;
     private int neededBowlIndex = -1;
+    public bool isGameOver = false;
+    private DialogueController dialogueController;
 
     // Словари для хранения объектов по тегам и индексам
     public Dictionary<int, GameObject> Roots { get; private set; } = new Dictionary<int, GameObject>();
@@ -21,25 +26,154 @@ public class GameLogic : MonoBehaviour
 
     private void Start()
     {
+        dialogueController = FindAnyObjectByType<DialogueController>();
         animationsControl = FindAnyObjectByType<AnimationsControl>();
         currentObject = null;
         PopulateResources();
-        Bowls[2].GetComponent<Bowls>().enabled = false; // Отключаем пустую миску от вазимодействия
-        
-    }
 
+        AccessHerbsAndBerriesInteraction(false);
+        AccessBowls(2, false);
+        AccessBowls(1, false);
+        AccessBowls(3, false);
+    }
+    public void EndGame()
+    {
+        CheckIngredients();
+        isGameOver = true;
+    }
+    public void ResetGame()
+    {
+        isGameOver = false;
+
+        SetActiveAllIngredients();
+        animationsControl.ResetWaters();
+
+        AccessHerbsAndBerriesInteraction(false);
+        AccessBowls(2, false);
+        AccessBowls(1, false);
+        AccessBowls(3, false);
+        Berries[1].GetComponent<Berries>().ResetBerries();
+        Berries[2].GetComponent<Berries>().ResetBerries();
+        Berries[3].GetComponent<Berries>().ResetBerries();
+    }
+    public void SetActiveAllIngredients()
+    {
+        foreach (var pair in Roots)
+        {
+            GameObject obj = pair.Value;
+            obj.layer = 0;
+            obj.SetActive(true);
+        }
+        foreach (var pair in Berries)
+        {
+            GameObject obj = pair.Value;
+            obj.layer = 0;
+            obj.SetActive(true);
+        }
+        foreach (var pair in Herbs)
+        {
+            GameObject obj = pair.Value;
+            obj.layer = 0;
+            obj.SetActive(true);
+        }
+        foreach (var pair in Bowls)
+        {
+            GameObject obj = pair.Value;
+            obj.layer = 0;
+            obj.SetActive(true);
+        }
+    }
+    public void CheckIngredients()
+    {
+        // Ожидаемый список
+        List<KeyValuePair<int, int>> expectedObjects = new List<KeyValuePair<int, int>>()
+        {
+            new KeyValuePair<int, int>(0, 1),
+            new KeyValuePair<int, int>(1, 1),
+            new KeyValuePair<int, int>(2, 1),
+            new KeyValuePair<int, int>(2, 3)
+        };
+
+        SortList(CollectedObjects);
+        SortList(expectedObjects);
+
+        // Считаем количество несовпадений
+        int differences = CountDifferences(CollectedObjects, expectedObjects);
+        if (differences <= 2 && differences > 0)
+        {
+            StartCoroutine(dialogueController.EndGame(1));
+            animationsControl.ObjectsOn(2, 4);
+        }
+        else if (differences > 2)
+        {
+            StartCoroutine(dialogueController.EndGame(2));
+            animationsControl.ObjectsOn(3, 4);
+        }
+        else if (differences == 0 && CollectedObjects.Count == expectedObjects.Count)
+        {
+            StartCoroutine(dialogueController.EndGame(3));
+            animationsControl.ObjectsOn(4, 4);
+        }
+    }
+    public void SortList(List<KeyValuePair<int, int>> list)
+    {
+        list.Sort((x, y) => x.Key.CompareTo(y.Key));
+    }
+    private int CountDifferences(List<KeyValuePair<int, int>> list1, List<KeyValuePair<int, int>> list2)
+    {
+        int differences = 0;
+        if (list1.Count != list2.Count)
+        {
+            differences = Mathf.Abs(list1.Count - list2.Count); //если количество элементов разное
+
+            //return differences;
+        }
+        //сравниваем количество элементов, равное минимальному из двух списков
+        int count = Mathf.Min(list1.Count, list2.Count);
+        for (int i = 0; i < count; i++)
+        {
+            if (list1[i].Key != list2[i].Key || list1[i].Value != list2[i].Value)
+            {
+                differences++;
+            }
+        }
+        return differences;
+    }
     public void AddToObjectsList(int index, int objectIndicator)
     {
-        CollectedObjects.Add(new KeyValuePair<int, int>(index, objectIndicator));
+        CollectedObjects.Add(new KeyValuePair<int, int>(objectIndicator, index));
         Debug.Log("К списку ингредиентов добавлен " + index + "-й объект группы " + objectIndicator);
+        if (objectIndicator == 0) rootIndex = index;
     }
-    public void AccessBowlsInteraction(bool scriptOn)
-    { 
-        // Отключаем скрипты у всех Roots, Berries и Herbs
-        DisableScripts(Roots, scriptOn);
+    public void CheckNumberOfObjects()
+    {
+        if (CollectedObjects.Count > 3 && !isGameOver)
+        {
+            AccessHerbsAndBerriesInteraction(false);
+
+            AccessBowls(1, true);
+            AccessBowls(3, false);
+            animationsControl.ObjectsOn(rootIndex+1, 3);
+            animationsControl.ObjectsOn(-1, 0);
+        }
+    }
+    public void AccessHerbsAndBerriesInteraction(bool scriptOn)
+    {
         DisableScripts(Berries, scriptOn);
         DisableScripts(Herbs, scriptOn);
-        DisableScripts(Bowls, scriptOn);
+    }
+    public void AccessRoots(bool scriptOn)
+    {
+        DisableScripts(Roots, scriptOn);
+    }
+    public void AccessBowls(int index, bool scriptOn)
+    {
+        GameObject obj = Bowls[index];
+        if (!scriptOn)
+        {
+            obj.layer = 2;
+        }
+        else obj.layer = 0;
     }
 
     // Вспомогательный метод для отключения скриптов у всех объектов в словаре
@@ -49,23 +183,11 @@ public class GameLogic : MonoBehaviour
         {
             GameObject obj = pair.Value;
 
-            // Получаем и отключаем скрипты в зависимости от типа объекта
-            if (obj.GetComponent<Roots>() != null)
+            if (!scriptOn)
             {
-                obj.GetComponent<Roots>().enabled = scriptOn;
+                obj.layer = 2;
             }
-            if (obj.GetComponent<Berries>() != null)
-            {
-                obj.GetComponent<Berries>().enabled = scriptOn;
-            }
-            if (obj.GetComponent<Herbs>() != null)
-            {
-                obj.GetComponent<Herbs>().enabled = scriptOn;
-            }
-            if (obj.GetComponent<Bowls>() != null)
-            {
-                obj.GetComponent<Bowls>().enabled = scriptOn;
-            }
+            else obj.layer = 0;
         }
     }
     public void SetCurrentObject(GameObject obj)
