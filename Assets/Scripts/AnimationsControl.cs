@@ -123,9 +123,6 @@ public class AnimationsControl : MonoBehaviour
         GameObject[] objects = null;
         switch (objectIndicator)
         {
-            /*case 0:
-                objects = GetChildren(rootsParent);
-                break;*/
             case 1:
                 objects = GetChildren(berriesDustParent);
                 break;
@@ -170,6 +167,7 @@ public class AnimationsControl : MonoBehaviour
             case 3:
                 objects = GetChildren(rootsWaterParent);
                 objects[0].SetActive(false);
+                Debug.Log("Изменяется вода в миске");
                 break;
             case 4:
                 objects = GetChildren(endPotionParent);

@@ -59,7 +59,7 @@ public class Herbs : Interactable
             yield return new WaitForSeconds(time);
             gameLogic.AccessBowls(3, true);
 
-            gameLogic.AccessHerbsAndBerriesInteraction(false);
+            //gameLogic.AccessHerbsAndBerriesInteraction(false);
 
             this.animationsControl.ObjectsDustOn(this.index, this.objectIndicator);
             gameLogic.AddToObjectsList(index, objectIndicator);
@@ -73,12 +73,13 @@ public class Herbs : Interactable
         {
             base.ReturnToInitialPosition();
             needToReturn = false;
+            gameObject.SetActive(false);
         }
-        if (anime != null && animationsControl.IsNearCorrectBowl(this.gameObject))
+        /*if (anime != null && animationsControl.IsNearCorrectBowl(this.gameObject))
         {
             gameObject.SetActive(false);
             meshRenderer.enabled = true;
             boxCollider.enabled = true;
-        }
+        }*/
     }
 }

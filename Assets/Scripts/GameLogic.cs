@@ -38,8 +38,8 @@ public class GameLogic : MonoBehaviour
     }
     public void EndGame()
     {
+        Debug.Log("Игра закончена");
         CheckIngredients();
-        isGameOver = true;
     }
     public void ResetGame()
     {
@@ -85,6 +85,7 @@ public class GameLogic : MonoBehaviour
     }
     public void CheckIngredients()
     {
+        animationsControl.ObjectsOn(-1, 3);
         // Ожидаемый список
         List<KeyValuePair<int, int>> expectedObjects = new List<KeyValuePair<int, int>>()
         {
@@ -145,17 +146,25 @@ public class GameLogic : MonoBehaviour
         Debug.Log("К списку ингредиентов добавлен " + index + "-й объект группы " + objectIndicator);
         if (objectIndicator == 0) rootIndex = index;
     }
-    public void CheckNumberOfObjects()
+    public bool CheckNumberOfObjects()
     {
-        if (CollectedObjects.Count > 3 && !isGameOver)
+        if (isGameOver)
         {
             AccessHerbsAndBerriesInteraction(false);
 
             AccessBowls(1, true);
             AccessBowls(3, false);
-            animationsControl.ObjectsOn(rootIndex+1, 3);
-            animationsControl.ObjectsOn(-1, 0);
+            animationsControl.ObjectsOn(rootIndex + 1, 3); // запускаем правильную воду
+            animationsControl.ObjectsOn(-1, 0); // убираем корень из миски
+            isGameOver = false;
+            return false;
         }
+        if (CollectedObjects.Count > 3)
+        {
+            Debug.Log("Ингредиентов 3 штуки");
+            return true;
+        }
+        return false;
     }
     public void AccessHerbsAndBerriesInteraction(bool scriptOn)
     {

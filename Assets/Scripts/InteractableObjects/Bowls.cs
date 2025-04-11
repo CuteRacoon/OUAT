@@ -39,13 +39,24 @@ public class Bowls : Interactable
             animationsControl.CleanDust();
 
 
-            if (index == 3) gameLogic.AccessHerbsAndBerriesInteraction(true);
+            if (index == 3)
+            {
+                if (!gameLogic.CheckNumberOfObjects())
+                {
+                    gameLogic.AccessHerbsAndBerriesInteraction(true);
+                }
+                else
+                {
+                    gameLogic.isGameOver = true;
+                    gameLogic.CheckNumberOfObjects();
+                }
+
+            }
             if (index == 1)
             {
-                animationsControl.ObjectsOn(-1, 3);
                 gameLogic.EndGame();
+                Debug.Log("Вызываю завершение игры из Bowls");
             }
-            
         }
         else
         {
