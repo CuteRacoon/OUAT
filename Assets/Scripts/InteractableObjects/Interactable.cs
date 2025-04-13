@@ -12,7 +12,7 @@ public class Interactable : MonoBehaviour
     public bool manualHighlightEnabled = false; // Флаг для ручного включения подсветки
 
     protected Rigidbody rb;
-    protected Camera mainCamera;
+    protected Camera tableCamera;
 
     protected bool isHoldingObject = false;
     protected bool isMouseOver = false;
@@ -35,23 +35,16 @@ public class Interactable : MonoBehaviour
         tableLayer = LayerMask.GetMask("Table");
         rb = GetComponent<Rigidbody>();
         gameLogic = FindAnyObjectByType<GameLogic>();
+
         if (rb == null)
         {
             Debug.LogError("Объект должен иметь компонент Rigidbody!");
             enabled = false;
             return;
         }
-
+        tableCamera = Camera.main;
         rb.useGravity = true;
         rb.isKinematic = false;
-
-        mainCamera = Camera.main;
-        if (mainCamera == null)
-        {
-            Debug.LogError("Главная камера не найдена!");
-            enabled = false;
-            return;
-        }
 
         outlineComponent = GetComponent<Outline>();
         if (outlineComponent == null)
@@ -118,7 +111,7 @@ public class Interactable : MonoBehaviour
         }
         rb.isKinematic = true;
 
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        Ray ray = tableCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, tableLayer))
         {
@@ -145,10 +138,10 @@ public class Interactable : MonoBehaviour
     protected virtual void MoveObject()
     {
         Vector3 mousePosition = Input.mousePosition;
-        mousePosition.z = Vector3.Distance(transform.position, mainCamera.transform.position);
-        Vector3 worldPosition = mainCamera.ScreenToWorldPoint(mousePosition);
+        mousePosition.z = Vector3.Distance(transform.position, tableCamera.transform.position);
+        Vector3 worldPosition = tableCamera.ScreenToWorldPoint(mousePosition);
 
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        Ray ray = tableCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, tableLayer))
         {
@@ -161,7 +154,7 @@ public class Interactable : MonoBehaviour
 
     protected virtual void HandleMouseInteraction()
     {
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        Ray ray = tableCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
         bool hitThisObject = Physics.Raycast(ray, out hit) && hit.collider.gameObject == this.gameObject;
@@ -215,13 +208,18 @@ public class Interactable : MonoBehaviour
 
         if (Vector3.Distance(transform.position, initialPosition) < 0.01f)
         {
-            transform.position = initialPosition;
-            transform.localScale = initialScale;
-            transform.rotation = Quaternion.Euler(initialRotation);
-            isReturning = false;
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-            gameLogic.CheckNumberOfObjects();
+            ReturnToInitialPositionIfHide();
+
+            gameLogic.CheckNumberOfObjects(); // УБРАТЬ ПОТОМ
         }
+    }
+    protected virtual void ReturnToInitialPositionIfHide()
+    {
+        transform.position = initialPosition;
+        transform.localScale = initialScale;
+        transform.rotation = Quaternion.Euler(initialRotation);
+        isReturning = false;
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
     }
 }

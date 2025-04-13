@@ -8,6 +8,7 @@ public class Berries : Interactable
     private Animation anime;
     private AnimationsControl animationsControl;
     private bool needToReturn = false;
+    private float timeToWait = 1.07f;
 
     private int objectIndicator = 1;
 
@@ -52,6 +53,7 @@ public class Berries : Interactable
     public void ResetBerries()
     {
         berriesObject.SetActive(true);
+        gameObject.GetComponent<Berries>().enabled = true;
     }
     protected override IEnumerator HandleObjectRelease()
     {
@@ -61,26 +63,24 @@ public class Berries : Interactable
             needToReturn = true;
             anime.Play("BerriesAnimation");
 
-            Rigidbody[] allRigidbodies = berriesObject.GetComponentsInChildren<Rigidbody>();
-            // Включаем гравитацию для всех Rigidbody
-            foreach (Rigidbody rb in allRigidbodies)
+            /*Rigidbody[] rigidBodies = berriesObject.GetComponentsInChildren<Rigidbody>();
+            foreach (Rigidbody rb in rigidBodies)
             {
-                rb.useGravity = true;
                 rb.isKinematic = false;
-            }
-
+                rb.useGravity = true;
+            }*/
+            StartCoroutine(SetActiveBerries());
             // Ждем пока анимация не закончит проигрываться.
-            yield return new WaitForSeconds(anime["BerriesAnimation"].length);
+            yield return new WaitForSeconds(timeToWait);
 
-            // Выключаем гравитацию и включаем кинематику для всех Rigidbody
-            foreach (Rigidbody rb in allRigidbodies)
+            /*// Выключаем гравитацию и включаем кинематику для всех Rigidbody
+            foreach (Rigidbody rb in meshRenderers)
             {
                 rb.useGravity = false;
                 rb.isKinematic = true;
-            }
+            }*/
             if (berriesObject != null && this.index > 0)
             {
-                berriesObject.SetActive(false);
                 if (animationsControl.isFull)
                 {
                     animationsControl.CleanDust();
@@ -90,53 +90,19 @@ public class Berries : Interactable
             }
             DropObject();
 
-            gameLogic.AccessHerbsAndBerriesInteraction(false);
-
-            float time = animationsControl.PlayMortarAnimation();
-            yield return new WaitForSeconds(time);
-            gameLogic.AccessBowls(3, true);
-
-
-            animationsControl.ObjectsDustOn(this.index, objectIndicator);
+            yield return StartCoroutine(animationsControl.PlayMortarAnimation(this.index, this.objectIndicator));
             gameLogic.AddToObjectsList(index, objectIndicator);
+            gameObject.GetComponent<Berries>().enabled = false;
         }
         else
         {
             DropObject();
         }
     }
-
-    protected override void ReturnToInitialPosition()
+    private IEnumerator SetActiveBerries()
     {
-        base.ReturnToInitialPosition(); // Вызываем базовую реализацию
+        yield return new WaitForSeconds(timeToWait);
 
-        if (needToReturn)
-        {
-            RestoreChildPositions();
-            needToReturn = false;
-        }
-    }
-
-    // Восстановление начальных позиций потомков
-    private void RestoreChildPositions()
-    {
-        if (berriesObject != null && initialChildPositions != null)
-        {
-            Transform[] childTransforms = berriesObject.GetComponentsInChildren<Transform>();
-            int i = 0;
-            foreach (Transform child in childTransforms)
-            {
-                if (child != berriesObject.transform)
-                {
-                    // Если позиция ребенка не была изменена вручную, восстанавливаем ее
-                    if (child.GetComponent<Rigidbody>() != null && child.GetComponent<Rigidbody>().isKinematic)
-                    {
-                        child.position = initialChildPositions[i];
-                        child.rotation = Quaternion.identity;
-                    }
-                    i++;
-                }
-            }
-        }
+        berriesObject.SetActive(false);
     }
 }

@@ -15,6 +15,7 @@ public class AnimationsControl : MonoBehaviour
     public bool isFull = false;
 
     public Animation mortarAnime;
+    public GameLogic gameLogic;
 
     public Collider[] bowlColliders;
 
@@ -22,6 +23,7 @@ public class AnimationsControl : MonoBehaviour
 
     private void Awake()
     {
+        gameLogic = FindAnyObjectByType<GameLogic>();
         // Синглтон, для надёжности
         if (Instance != null && Instance != this)
         {
@@ -105,15 +107,20 @@ public class AnimationsControl : MonoBehaviour
             return -1; // Если тег не распознан, возвращаем -1
         }
     }
-    public float PlayMortarAnimation()
+    public IEnumerator PlayMortarAnimation(int index, int objectIndicator)
     {
         if (mortarAnime != null)
         {
+            gameLogic.AccessHerbsAndBerriesInteraction(false);
+            Debug.Log("Запускаю анимацию ступки");
+
             mortarAnime.Play("MortarAnimation");
-            return mortarAnime["MortarAnimation"].length;
+            yield return new WaitForSeconds(mortarAnime["MortarAnimation"].length);
+
+            gameLogic.AccessBowls(3, true);
+            ObjectsDustOn(index, objectIndicator);
         }
-        else Debug.Log("Animation нет на ступке");
-        return 0;
+        else Debug.Log("Animation нет на ступке"); ;
     }
     public void ObjectsDustOn(int index, int objectIndicator)
     {

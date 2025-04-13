@@ -35,7 +35,7 @@ public class Bowls : Interactable
         if (anime != null && animationsControl.IsNearCorrectBowl(this.gameObject))
         {
             anime.Play(animationName);
-            yield return new WaitForSeconds(anime[animationName].length-0.5f);
+            yield return new WaitForSeconds(anime[animationName].length - 0.5f);
             animationsControl.CleanDust();
 
 

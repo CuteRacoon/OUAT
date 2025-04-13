@@ -15,6 +15,7 @@ public class Roots : Interactable
     protected void Awake()
     {
         base.Start();
+        base.pickupHeight = 1f;
 
         anime = GetComponent<Animation>();
         if (anime == null)
@@ -25,7 +26,7 @@ public class Roots : Interactable
         animationsControl = FindAnyObjectByType<AnimationsControl>();
 
         if (tag != "roots") Debug.LogWarning("Тэг объекта не Roots");
-        meshRenderer = GetComponent<MeshRenderer>();
+        meshRenderer = GetComponentInChildren<MeshRenderer>();
         boxCollider = GetComponent<Collider>();
 
     }
@@ -33,16 +34,17 @@ public class Roots : Interactable
     {
         if (anime != null && animationsControl.IsNearCorrectBowl(this.gameObject))
         {
-            anime.Play("RootsAnimation");
-            yield return new WaitForSeconds(anime["RootsAnimation"].length);
-            animationsControl.ObjectsOn(this.index, objectIndicator);
             needToDelete = true;
+            anime.Play("RootsAnimation");
+
+            yield return new WaitForSeconds(anime["RootsAnimation"].length);
+
+            animationsControl.ObjectsOn(this.index, objectIndicator);
             gameLogic.AddToObjectsList(index, objectIndicator);
             int indexToDisable = (index == 1) ? 2 : 1;
 
             gameLogic.AccessRoots(false);
             gameLogic.AccessHerbsAndBerriesInteraction(true);
-            //gameLogic.AccessBowls(3, true);
         }
         else
         {
@@ -53,7 +55,7 @@ public class Roots : Interactable
         {
             meshRenderer.enabled = false;
             boxCollider.enabled = false;
-            base.ReturnToInitialPosition();
+            base.ReturnToInitialPositionIfHide();
             gameObject.SetActive(false);
             needToDelete = false;
             meshRenderer.enabled = true;

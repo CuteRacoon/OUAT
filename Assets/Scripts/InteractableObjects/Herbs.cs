@@ -5,7 +5,7 @@ public class Herbs : Interactable
 {
     private Animation anime;
     private AnimationsControl animationsControl;
-    private bool needToReturn;
+    private bool needToDelete;
 
     private MeshRenderer meshRenderer;
     private Collider boxCollider;
@@ -16,7 +16,7 @@ public class Herbs : Interactable
     protected override void Start()
     {
         base.Start();
-        meshRenderer = GetComponent<MeshRenderer>();
+        meshRenderer = GetComponentInChildren<MeshRenderer>();
         boxCollider = GetComponent<Collider>();
 
         anime = GetComponent<Animation>();
@@ -42,44 +42,33 @@ public class Herbs : Interactable
     {
         if (anime != null && animationsControl.IsNearCorrectBowl(this.gameObject))
         {
-            needToReturn = true;
+            needToDelete = true;
             anime.Play("HerbsAnimation");
 
             yield return new WaitForSeconds(anime["HerbsAnimation"].length);
-            
-            this.animationsControl.ObjectsOn(this.index, this.objectIndicator);
 
-            DropObject();
-            meshRenderer.enabled = false;
-            boxCollider.enabled = false;
-
-            gameLogic.AccessHerbsAndBerriesInteraction(false);
-
-            float time = this.animationsControl.PlayMortarAnimation();
-            yield return new WaitForSeconds(time);
-            gameLogic.AccessBowls(3, true);
+            animationsControl.ObjectsOn(this.index, objectIndicator);
+            gameLogic.AddToObjectsList(index, objectIndicator);
 
             //gameLogic.AccessHerbsAndBerriesInteraction(false);
 
-            this.animationsControl.ObjectsDustOn(this.index, this.objectIndicator);
-            gameLogic.AddToObjectsList(index, objectIndicator);
-
-        }
-        else
-        {
             DropObject();
-        }
-        if (needToReturn)
-        {
+
+            meshRenderer.enabled = false;
+            boxCollider.enabled = false;
             base.ReturnToInitialPosition();
-            needToReturn = false;
-            gameObject.SetActive(false);
-        }
-        /*if (anime != null && animationsControl.IsNearCorrectBowl(this.gameObject))
-        {
+
+
+            yield return StartCoroutine(animationsControl.PlayMortarAnimation(this.index, this.objectIndicator));
+            needToDelete = false;
             gameObject.SetActive(false);
             meshRenderer.enabled = true;
             boxCollider.enabled = true;
-        }*/
+        }
+        else
+        {
+            isReturning = true;
+            DropObject();
+        }
     }
 }
