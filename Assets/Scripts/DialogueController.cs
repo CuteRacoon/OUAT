@@ -14,12 +14,6 @@ public class DialogueController : MonoBehaviour
         textThing.SetActive(false);
         gameLogic = FindAnyObjectByType<GameLogic>();
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     public IEnumerator EndGame(int dialogueIndex)
     {
         string phrase = "";

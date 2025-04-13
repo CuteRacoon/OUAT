@@ -55,6 +55,7 @@ public class GameLogic : MonoBehaviour
         Berries[1].GetComponent<Berries>().ResetBerries();
         Berries[2].GetComponent<Berries>().ResetBerries();
         Berries[3].GetComponent<Berries>().ResetBerries();
+        CollectedObjects.Clear();
     }
     public void SetActiveAllIngredients()
     {
@@ -100,12 +101,12 @@ public class GameLogic : MonoBehaviour
 
         // —читаем количество несовпадений
         int differences = CountDifferences(CollectedObjects, expectedObjects);
-        if (differences <= 2 && differences > 0)
+        if (differences == 1)
         {
             StartCoroutine(dialogueController.EndGame(1));
             animationsControl.ObjectsOn(2, 4);
         }
-        else if (differences > 2)
+        else if (differences > 1)
         {
             StartCoroutine(dialogueController.EndGame(2));
             animationsControl.ObjectsOn(3, 4);
