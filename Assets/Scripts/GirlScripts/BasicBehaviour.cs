@@ -15,6 +15,7 @@ public class BasicBehaviour : MonoBehaviour
     private int currentBehaviour;                         // Reference to the current player behaviour.
     private int defaultBehaviour;                         // The default behaviour of the player when any other is not active.
     private int behaviourLocked;                          // Reference to temporary locked behaviour that forbids override.
+    private int behaviourCode;
     private Vector3 lastDirection;                        // Last direction the player was moving.
     private Animator anim;                                // Reference to the Animator component.
     private ThirdPersonOrbitCamBasic camScript;           // Reference to the third person camera script.
@@ -29,6 +30,11 @@ public class BasicBehaviour : MonoBehaviour
     private Vector3 colExtents;                           // Collider extents for ground test. 
     private float lockStartTime;
     private const float maxLockDuration = 2f;
+
+    // Catscene variables
+    private bool inCutscene = false;
+    private float cutsceneH;
+    private float cutsceneV;
 
     // Get current horizontal and vertical axes.
     public float GetH => h;
@@ -73,15 +79,24 @@ public class BasicBehaviour : MonoBehaviour
             }
         }
         // Store the input axes.
-        h = Input.GetAxis("Horizontal");
-        v = Input.GetAxis("Vertical");
+        // Get input only when NOT in cutscene
+        if (!inCutscene)
+        {
+            h = Input.GetAxis("Horizontal");
+            v = Input.GetAxis("Vertical");
+            sprint = Input.GetKey(KeyCode.LeftShift);
+        }
+        else
+        {
+            // Use cutscene values when in cutscene
+            h = cutsceneH;
+            v = cutsceneV;
+        }
 
         // Set the input axes on the Animator Controller.
         anim.SetFloat(hFloat, h, 0.1f, Time.deltaTime);
         anim.SetFloat(vFloat, v, 0.1f, Time.deltaTime);
 
-        // Toggle sprint by input.
-        //sprint = Input.GetButton (sprintButton);  REPLACED
         sprint = Input.GetKey(KeyCode.LeftShift); // Use Left Shift for sprint
 
         // Set the correct camera FOV for sprint mode.
@@ -97,6 +112,23 @@ public class BasicBehaviour : MonoBehaviour
         }
         // Set the grounded test on the Animator Controller.
         anim.SetBool(groundedBool, IsGrounded());
+    }
+    public void StartGirlInMonsterSceneAnimation(float hValue, float vValue)
+    {
+        inCutscene = true;
+        cutsceneH = hValue;
+        cutsceneV = vValue;
+        LockTempBehaviour(this.behaviourCode); // Use this.behaviourCode instead of GetHashCode()
+        //anim.applyRootMotion = false;
+        //anim.CrossFade("GirlInMonsterSceneAnimation", 0.2f);
+    }
+
+    public void EndGirlInMonsterSceneAnimation()
+    {
+        inCutscene = false;
+        cutsceneH = 0;
+        cutsceneV = 0;
+        UnlockTempBehaviour(this.behaviourCode); // Use this.behaviourCode instead of GetHashCode()
     }
 
     // Call the FixedUpdate functions of the active or overriding behaviours.

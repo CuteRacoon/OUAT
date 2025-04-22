@@ -101,12 +101,12 @@ public class GameLogic : MonoBehaviour
 
         // —читаем количество несовпадений
         int differences = CountDifferences(CollectedObjects, expectedObjects);
-        if (differences == 1)
+        if (differences > 0 && differences <= 2)
         {
             StartCoroutine(dialogueController.EndGame(1));
             animationsControl.ObjectsOn(2, 4);
         }
-        else if (differences > 1)
+        else if (differences > 2)
         {
             StartCoroutine(dialogueController.EndGame(2));
             animationsControl.ObjectsOn(3, 4);

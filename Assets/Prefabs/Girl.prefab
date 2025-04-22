@@ -25,16 +25,28 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400052, guid: 1cb4dadae13a76b4480bc3f50882dfea, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2.4511614
+      objectReference: {fileID: 0}
+    - target: {fileID: 400052, guid: 1cb4dadae13a76b4480bc3f50882dfea, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2.4511614
+      objectReference: {fileID: 0}
+    - target: {fileID: 400052, guid: 1cb4dadae13a76b4480bc3f50882dfea, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2.4511614
+      objectReference: {fileID: 0}
+    - target: {fileID: 400052, guid: 1cb4dadae13a76b4480bc3f50882dfea, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -17.2
+      value: 4.15
       objectReference: {fileID: 0}
     - target: {fileID: 400052, guid: 1cb4dadae13a76b4480bc3f50882dfea, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -1.9900001
       objectReference: {fileID: 0}
     - target: {fileID: 400052, guid: 1cb4dadae13a76b4480bc3f50882dfea, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.39
+      value: -6.01
       objectReference: {fileID: 0}
     - target: {fileID: 400052, guid: 1cb4dadae13a76b4480bc3f50882dfea, type: 3}
       propertyPath: m_LocalRotation.w
@@ -176,7 +188,6 @@ MonoBehaviour:
   playerCamera: {fileID: 0}
   turnSmoothing: 0.06
   sprintFOV: 100
-  sprintButton: Sprint
 --- !u!114 &4432939183682574108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -189,8 +200,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b04cfe015b44cfc4fb97244a8ce150c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 0.11
-  runSpeed: 0.7
+  walkSpeed: 0.3
+  runSpeed: 0.3
   sprintSpeed: 2
   speedDampTime: 0.1
   jumpButton: Jump

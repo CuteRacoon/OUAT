@@ -27,6 +27,7 @@ public class Interactable : MonoBehaviour
     protected Vector3 objectWorldPosition;
 
     protected Outline outlineComponent;
+    protected CameraBehaviour cameraBehaviour;
     protected OutlineSettings outlineSettings;
     protected GameLogic gameLogic;
 
@@ -35,6 +36,7 @@ public class Interactable : MonoBehaviour
         tableLayer = LayerMask.GetMask("Table");
         rb = GetComponent<Rigidbody>();
         gameLogic = FindAnyObjectByType<GameLogic>();
+        cameraBehaviour = FindAnyObjectByType<CameraBehaviour>();
 
         if (rb == null)
         {
@@ -42,7 +44,8 @@ public class Interactable : MonoBehaviour
             enabled = false;
             return;
         }
-        tableCamera = Camera.main;
+        //tableCamera = Camera.main;
+        tableCamera = cameraBehaviour.GetCamera();
         rb.useGravity = true;
         rb.isKinematic = false;
 
