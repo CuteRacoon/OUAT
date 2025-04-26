@@ -3970,7 +3970,6 @@ MonoBehaviour:
   stayingGirls:
   - {fileID: 1315852938}
   - {fileID: 612802539}
-  playerInside: 0
 --- !u!1 &894236993
 GameObject:
   m_ObjectHideFlags: 0
@@ -7479,9 +7478,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72b11c532f2c1a744b8bb498b8b072b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basicOutlineColor: {r: 0.2005767, g: 0.7433963, b: 0.43153992, a: 1}
-  tipOutlineColor: {r: 0.93207544, g: 0.31479523, b: 0.8812405, a: 1}
-  outlineWidth: 5
+  basicOutlineColor: {r: 0.31764707, g: 0.72156864, b: 0.3254902, a: 1}
+  tipOutlineColor: {r: 0.8509804, g: 0.54509807, b: 0.11372549, a: 1}
+  outlineWidth: 3.5
 --- !u!4 &1558146647
 Transform:
   m_ObjectHideFlags: 0
