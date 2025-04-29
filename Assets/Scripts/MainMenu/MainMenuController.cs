@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -7,9 +8,11 @@ public class MainMenuController : MonoBehaviour
     public SkinnedMeshRenderer bookMesh;
     public Material[] materials = new Material[3];
     public AudioClip[] sounds = new AudioClip[2];
+    public GameObject chaptersButtons;
+    
     private AudioSource audioSource;
 
-    public int initialActiveBookmarkIndex = 0;
+    private int initialActiveBookmarkIndex = 0;
     private int currentActiveBookmarkIndex = -1; // »ндекс текущей активной закладки. »нициализируем -1.
 
     void Start()
@@ -66,6 +69,14 @@ public class MainMenuController : MonoBehaviour
         }
         yield return new WaitForSeconds(0.2f);
         bookMesh.material = materials[index];
+        if (index == 0)
+        {
+            chaptersButtons.SetActive(true);
+        }
+        else
+        {
+            chaptersButtons.SetActive(false);
+        }
     }
 
     private void ShowBookmark(int index)
@@ -78,6 +89,12 @@ public class MainMenuController : MonoBehaviour
     {
         bookmarkAnimators[index].SetTrigger("NeedToHide");
         StartCoroutine(ResetMeshes(index, true));
+    }
+
+    public void PlayGame()
+    {
+        SceneManager.LoadScene("MiniGame");
+        //Debug.Log("ћен€ю сцену на игровую");
     }
 }
 
