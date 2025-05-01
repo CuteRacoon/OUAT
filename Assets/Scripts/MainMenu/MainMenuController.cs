@@ -93,7 +93,7 @@ public class MainMenuController : MonoBehaviour
 
     public void PlayGame()
     {
-        SceneManager.LoadScene("MiniGame");
+        SceneManager.LoadScene("House");
         //Debug.Log("ћен€ю сцену на игровую");
     }
 }
